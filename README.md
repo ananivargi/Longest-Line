@@ -1,4 +1,6 @@
 # Longest Line
 Software Design and Development Assessment Task 2
-** Descirption
-This project is a game whose objective is to make the longest line possible on a grid
+** Description
+This project is a game whose objective is to make the longest line possible on a 5 x 5 dotted = grid
+
+**Rules
