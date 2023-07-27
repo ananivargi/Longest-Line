@@ -1,6 +1,3 @@
-
-
-
 import pygame, sys
 import numpy as np
 
@@ -10,12 +7,11 @@ WIDTH = 800
 HEIGHT = 800
 LINE_WIDTH = 8
 WIN_LINE_WIDTH = 15
-BOARD_ROWS = 7
-BOARD_COLS = 7
-SQUARE_SIZE = WIDTH // BOARD_COLS
-CIRCLE_RADIUS = SQUARE_SIZE // 3
+ROWS = 7
+COLS = 7
+SQSIZE = WIDTH // COLS
+CIRCLE_RADIUS = SQSIZE // 3
 CIRCLE_WIDTH = 15
-CROSS_WIDTH = 25
 SPACE = 55
 RED = (255, 0, 0)
 BG_COLOR = (20, 160, 130)
@@ -27,25 +23,25 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Longest Line Game!')
 screen.fill(BG_COLOR)
 
-board = np.zeros((BOARD_ROWS, BOARD_COLS))
+board = np.zeros(ROWS, COLS)
 
 def draw_lines():
-    for row in range(BOARD_ROWS):
-        line_pos = row * SQUARE_SIZE
+    for row in range(ROWS):
+        line_pos = row * SQSIZE
         pygame.draw.line(screen, LINE_COLOR, (0, line_pos), (WIDTH, line_pos), LINE_WIDTH)
 
-    for col in range(BOARD_COLS):
-        line_pos = col * SQUARE_SIZE
+    for col in range(COLS):
+        line_pos = col * SQSIZE
         pygame.draw.line(screen, LINE_COLOR, (line_pos, 0), (line_pos, HEIGHT), LINE_WIDTH)
 
 def draw_figures():
-    for row in range(BOARD_ROWS):
-        for col in range(BOARD_COLS):
+    for row in range(ROWS):
+        for col in range(COLS):
             if board[row][col] == 1:
-                pygame.draw.circle(screen, CIRCLE_COLOR_PLAYER1, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), CIRCLE_RADIUS)
+                pygame.draw.circle(screen, CIRCLE_COLOR_PLAYER1, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), CIRCLE_RADIUS)
             elif board[row][col] == 2:
-                pygame.draw.circle(screen, CIRCLE_COLOR_PLAYER2, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), CIRCLE_RADIUS)
-                pygame.draw.circle(screen, CIRCLE_COLOR_PLAYER2, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), CIRCLE_RADIUS // 2)
+                pygame.draw.circle(screen, CIRCLE_COLOR_PLAYER2, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), CIRCLE_RADIUS)
+                pygame.draw.circle(screen, CIRCLE_COLOR_PLAYER2, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), CIRCLE_RADIUS // 2)
 
 def mark_square(row, col, player):
     board[row][col] = player
@@ -54,80 +50,76 @@ def available_square(row, col):
     return board[row][col] == 0
 
 def is_board_full():
-    for row in range(BOARD_ROWS):
-        for col in range(BOARD_COLS):
+    for row in range(ROWS):
+        for col in range(COLS):
             if board[row][col] == 0:
                 return False
     return True
 
 def check_win(player):
     #Check for vertical win
-        for col in range(BOARD_COLS):
-            for row in range(BOARD_ROWS - 4):
+        for col in range(COLS):
+            for row in range(ROWS - 4):
                 if board[row][col] == player and board[row+1][col] == player and board[row+2][col] == player and board[row+3][col] == player and board[row+4][col] == player:
                     draw_vertical_winning_line(row, col, player)
                     return True
 
     # Check for horizontal win
-        for row in range(BOARD_ROWS):
-            for col in range(BOARD_COLS - 4):
+        for row in range(ROWS):
+            for col in range(COLS - 4):
                 if board[row][col] == player and board[row][col+1] == player and board[row][col+2] == player and board[row][col+3] == player and board[row][col+4] == player:
                     draw_horizontal_winning_line(row, col, player)
                     return True
 
     # Check for ascending diagonal win
-        for row in range(4, BOARD_ROWS):
-            for col in range(BOARD_COLS - 4):
+        for row in range(4, ROWS):
+            for col in range(COLS - 4):
                 if board[row][col] == player and board[row-1][col+1] == player and board[row-2][col+2] == player and board[row-3][col+3] == player and board[row-4][col+4] == player:
                     draw_asc_diagonal(row, col, player)
                     return True
 
     # Check for descending diagonal win
-        for row in range(BOARD_ROWS - 4):
-            for col in range(BOARD_COLS - 4):
+        for row in range(ROWS - 4):
+            for col in range(COLS - 4):
                 if board[row][col] == player and board[row+1][col+1] == player and board[row+2][col+2] == player and board[row+3][col+3] == player and board[row+4][col+4] == player:
                     draw_desc_diagonal(row, col, player)
                     return True
 
         return False
 def draw_vertical_winning_line(row, col, player):
-    start_x = col * SQUARE_SIZE + SQUARE_SIZE // 2
-    start_y = row * SQUARE_SIZE
-    end_x = col * SQUARE_SIZE + SQUARE_SIZE // 2
-    end_y = (row + 5) * SQUARE_SIZE
+    start_x = col * SQSIZE + SQSIZE // 2
+    start_y = row * SQSIZE
+    end_x = col * SQSIZE + SQSIZE // 2
+    end_y = (row + 5) * SQSIZE
     pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
 
 def draw_horizontal_winning_line(row, col, player):
-    start_x = col * SQUARE_SIZE
-    start_y = row * SQUARE_SIZE + SQUARE_SIZE // 2
-    end_x = (col + 5) * SQUARE_SIZE
-    end_y = row * SQUARE_SIZE + SQUARE_SIZE // 2
+    start_x = col * SQSIZE
+    start_y = row * SQSIZE + SQSIZE // 2
+    end_x = (col + 5) * SQSIZE
+    end_y = row * SQSIZE + SQSIZE // 2
     pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
 
 def draw_asc_diagonal(row, col, player):
-    start_x = col * SQUARE_SIZE
-    start_y = (row + 1) * SQUARE_SIZE
-    end_x = (col + 5) * SQUARE_SIZE
-    end_y = (row - 4) * SQUARE_SIZE
+    start_x = col * SQSIZE
+    start_y = (row + 1) * SQSIZE
+    end_x = (col + 5) * SQSIZE
+    end_y = (row - 4) * SQSIZE
     pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
 
 
-
-
-
-
 def draw_desc_diagonal(row, col, player):
-    start_x = col * SQUARE_SIZE
-    start_y = row * SQUARE_SIZE
-    end_x = (col + 5) * SQUARE_SIZE
-    end_y = (row + 5) * SQUARE_SIZE
+    start_x = col * SQSIZE
+    start_y = row * SQSIZE
+    end_x = (col + 5) * SQSIZE
+    end_y = (row + 5) * SQSIZE
     pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
 
 def restart():
     screen.fill(BG_COLOR)
     draw_lines()
-    for row in range(BOARD_ROWS):
-        for col in range(BOARD_COLS):
+    for row in range(ROWS):
+        for col in range(COLS):
             board[row][col] = 0
 
 # Variables
@@ -147,8 +139,8 @@ while True:
                 mouseX = event.pos[0]  # x
                 mouseY = event.pos[1]  # y
 
-                clicked_row = int(mouseY // SQUARE_SIZE)
-                clicked_col = int(mouseX // SQUARE_SIZE)
+                clicked_row = int(mouseY // SQSIZE)
+                clicked_col = int(mouseX // SQSIZE)
 
                 if available_square(clicked_row, clicked_col):
                     mark_square(clicked_row, clicked_col, player)
