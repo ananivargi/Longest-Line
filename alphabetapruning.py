@@ -119,9 +119,9 @@ class Board:
 
         # no win yet
         return 0
-    
+
     #--Get the count of each player(token) for each winning line so we can check if there is a win or loss in 1
-    def get_sqrs_by_line(self, line):
+    def get_sqrs_by_line(self, line, tokens_dict):
         tokens_dict = {}
         for sqr in (LINES_DICT[line]):
             token =  (self.squares(sqr))
@@ -133,9 +133,23 @@ class Board:
             tokens_dict[token]['sqrs'].append(sqr)
                 
 
-
-            
-
+    def checkMove (self):
+        v = 0
+        tokens_dict= {}
+        for key in LINES_DICT:
+            print (key)
+            self.get_sqrs_by_line( key, tokens_dict)
+            if tokens_dict[2]['cnt'] == 3 and tokens_dict[0]['cnt'] == 1:
+                 v = 1
+                 return tokens_dict[0]['sqrs']
+        for key in LINES_DICT:
+            Board.get_sqrs_by_line( key, tokens_dict)
+            if tokens_dict[1]['cnt'] == 3 and tokens_dict[0]['cnt'] == 1:
+                v = 1
+                return tokens_dict[0]['sqrs']
+        if not v == 1:
+            return None
+        
     def mark_sqr(self, row, col, player):
         self.squares[row][col] = player
         self.marked_sqrs += 1
@@ -233,7 +247,11 @@ class AI:
         if self.level == 0:
             # random choice
             eval = 'random'
-            move = self.rnd(main_board)
+            if main_board.checkMove(self) == None:
+                move = self.rnd(main_board)
+            else:
+                move = main_board.checkMove(self)
+
         else:
             # minimax algo choice
             eval, move = self.minimax(0, main_board, -2, 2, False)
