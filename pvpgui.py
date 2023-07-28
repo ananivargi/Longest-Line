@@ -7,8 +7,8 @@ WIDTH = 800
 HEIGHT = 800
 LINE_WIDTH = 8
 WIN_LINE_WIDTH = 15
-ROWS = 7
-COLS = 7
+ROWS = int(7)
+COLS = int(7)
 SQSIZE = WIDTH // COLS
 CIRCLE_RADIUS = SQSIZE // 3
 CIRCLE_WIDTH = 15
@@ -23,7 +23,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Longest Line Game!')
 screen.fill(BG_COLOR)
 
-board = np.zeros(ROWS, COLS)
+board = np.zeros((ROWS, COLS))
 
 def draw_lines():
     for row in range(ROWS):

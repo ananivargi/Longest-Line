@@ -221,17 +221,21 @@ class Game:
 
     def show_lines(self):
         # bg
-        screen.fill( BG_COLOR )
+        SQSIZE = min(HEIGHT // ROWS, WIDTH // COLS)
 
-        # vertical
-        pygame.draw.line(screen, LINE_COLOR, (SQSIZE, 0), (SQSIZE, HEIGHT), LINE_WIDTH)
-        pygame.draw.line(screen, LINE_COLOR, (SQSIZE * 2, 0), (SQSIZE * 2, HEIGHT), LINE_WIDTH)
-        pygame.draw.line(screen, LINE_COLOR, (WIDTH - SQSIZE, 0), (WIDTH - SQSIZE, HEIGHT), LINE_WIDTH)
+        # bg
+        screen.fill(BG_COLOR)
 
-        # horizontal
-        pygame.draw.line(screen, LINE_COLOR, (0, SQSIZE), (WIDTH, SQSIZE), LINE_WIDTH)
-        pygame.draw.line(screen, LINE_COLOR, (0, SQSIZE * 2), (WIDTH, SQSIZE * 2), LINE_WIDTH)
-        pygame.draw.line(screen, LINE_COLOR, (0, HEIGHT - SQSIZE), (WIDTH, HEIGHT - SQSIZE), LINE_WIDTH)
+        # Draw vertical lines
+        for col in range(1, COLS):
+            x = col * SQSIZE
+            pygame.draw.line(screen, LINE_COLOR, (x, 0), (x, HEIGHT), LINE_WIDTH)
+
+        # Draw horizontal lines
+        for row in range(1, ROWS):
+            y = row * SQSIZE
+            pygame.draw.line(screen, LINE_COLOR, (0, y), (WIDTH, y), LINE_WIDTH)
+
 
     def draw_fig(self, row, col):
         if self.player == 1:

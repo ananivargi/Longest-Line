@@ -14,14 +14,15 @@ import numpy as np
 WIDTH = 800
 HEIGHT = 800
 
-ROWS = 4
-COLS = 4
+ROWS = 7
+COLS = 7
 SQSIZE = WIDTH // COLS
 
 LINE_WIDTH = 15
 CIRC_WIDTH = 15
 CIRCLE_RADIUS = SQSIZE // 3
 
+WIN_LINE_WIDTH = 15
 RADIUS = SQSIZE // 4
 
 OFFSET = 50
@@ -57,40 +58,38 @@ class Board:
         '''
 
         # vertical wins
+def final_state(self, show=False):
+    '''
+    @return 0 if there is no win yet
+    @return 1 if player 1 wins
+    @return 2 if player 2 wins
+    '''
 
-        for col in range(COLS):
-            for row in range(ROWS - 2):
-                if self.squares[row][col] ==  self.squares[row+1][col] ==  self.squares[row+2][col] != 0:
-                    #draw_fig(row, col, player)
-                    print (self.squares[row][col])
-                    return self.squares[row][col]
+    # vertical wins
+    for col in range(COLS):
+        for row in range(ROWS - 5):  # Change from -4 to -5
+            if self.squares[row][col] == self.squares[row + 1][col] == self.squares[row + 2][col] == self.squares[row + 3][col] == self.squares[row + 4][col] != 0:
+                return self.squares[row][col]
 
     # Check for horizontal win
-        for row in range(ROWS):
-            for col in range(COLS - 2):
-                if self.squares[row][col] == self.squares[row][col+1] == self.squares[row][col+2]!=0:
-                    #draw_horizontal_winning_line(row, col, player)
-                    print (self.squares[row][col])
-                    return self.squares[row][col]
+    for row in range(ROWS):
+        for col in range(COLS - 5):  # Change from -4 to -5
+            if self.squares[row][col] == self.squares[row][col + 1] == self.squares[row][col + 2] == self.squares[row][col + 3] == self.squares[row][col + 4] != 0:
+                return self.squares[row][col]
 
     # Check for ascending diagonal win
-        for row in range(2, ROWS):
-            for col in range(COLS - 2):
-                if self.squares[row][col] == self.squares[row-1][col+1] == self.squares[row-2][col+2] != 0:
-                    #draw_asc_diagonal(row, col, player)
-                    print (self.squares[row][col])
-                    return self.squares[row][col]
+    for row in range(4, ROWS):  # Change from 4 to 5
+        for col in range(COLS - 5):  # Change from -4 to -5
+            if self.squares[row][col] == self.squares[row - 1][col + 1] == self.squares[row - 2][col + 2] == self.squares[row - 3][col + 3] == self.squares[row - 4][col + 4] != 0:
+                return self.squares[row][col]
 
     # Check for descending diagonal win
-        for row in range(ROWS - 2):
-            for col in range(COLS - 2):
-                if self.squares[row][col] == self.squares[row+1][col+1] == self.squares[row+2][col+2] != 0:
-                    #draw_desc_diagonal(row, col, player)
-                    print (self.squares[row][col])
-                    return self.squares[row][col]
+    for row in range(ROWS - 5):  # Change from -4 to -5
+        for col in range(COLS - 5):  # Change from -4 to -5
+            if self.squares[row][col] == self.squares[row + 1][col + 1] == self.squares[row + 2][col + 2] == self.squares[row + 3][col + 3] == self.squares[row + 4][col + 4] != 0:
+                return self.squares[row][col]
 
-        return 0
-
+    return 0
     def mark_sqr(self, row, col, player):
         self.squares[row][col] = player
         self.marked_sqrs += 1
@@ -101,14 +100,14 @@ class Board:
     def get_empty_sqrs(self):
         empty_sqrs = []
         for row in range(ROWS):
-            for col in range(COLS):
+            for col in range(COLS): 
                 if self.empty_sqr(row, col):
                     empty_sqrs.append( (row, col) )
         
         return empty_sqrs
 
     def isfull(self):
-        return self.marked_sqrs == 16
+        return self.marked_sqrs == 49
 
     def isempty(self):
         return self.marked_sqrs == 0
@@ -321,13 +320,14 @@ def main():
                     game.reset()
                     board = game.board
                     ai = game.ai
+                
             pygame.display.update()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = event.pos
                 row = pos[1] // SQSIZE
                 col = pos[0] // SQSIZE
                 # human mark sqr
-                if board.empty_sqr(row, col) and game.running:
+                if board.empty_sqrs(row, col) and game.running:
                     game.make_move(row, col)
                     if game.isover():
                         game.running = False

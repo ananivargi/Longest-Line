@@ -37,10 +37,10 @@ LINES_DICT = {'R1':
 WIDTH = 600
 HEIGHT = 600
 
-ROWS = 4
-COLS = 4
+ROWS = 5
+COLS = 5
 SQSIZE = WIDTH // COLS
-WIN_LINE_WIDTH = 15
+
 LINE_WIDTH = 15
 CIRC_WIDTH = 15
 CROSS_WIDTH = 20
@@ -50,7 +50,7 @@ RADIUS = SQSIZE // 4
 OFFSET = 50
 
 # --- COLORS ---
-RED = (255, 0, 0)
+
 BG_COLOR = (28, 170, 156)
 LINE_COLOR = (23, 145, 135)
 CIRC_COLOR = (239, 231, 200)
@@ -60,7 +60,7 @@ CROSS_COLOR = (66, 66, 66)
 
 pygame.init()
 screen = pygame.display.set_mode( (WIDTH, HEIGHT) )
-pygame.display.set_caption('Longest Line Game!')
+pygame.display.set_caption('TIC TAC TOE AI')
 screen.fill( BG_COLOR )
 
 # --- CLASSES ---
@@ -138,54 +138,29 @@ class Board:
         return tokens_dict
                 
     #Loop through the lines and check if there's a win in 1 move for ANY player
-    def get_winning_sqr(self, win):
-        if win == 0:
-            winning_token = None
-            winner_sqr = ()
-            for line in LINES_DICT:
-                tokens_dict = self.get_sqrs_by_line(line)
-                if 0 in tokens_dict and tokens_dict[0]['cnt']==1: #There is only 1 empty square in this line
-                    winner_sqr = tokens_dict[0]['sqrs'][0] #the blank square in a winning line
-                    if 1 in tokens_dict and tokens_dict[1]['cnt']==ROWS-1:
-                        winning_token = 1                    
-                    elif 2 in tokens_dict and tokens_dict[2]['cnt']==ROWS-1 :
-                        winning_token = 2
-                    break        
-            return winning_token, winner_sqr   
-                        
+    def get_winning_sqr(self):
+        winning_token = None
+        winner_sqr = ()
+        for line in LINES_DICT:
+            tokens_dict = self.get_sqrs_by_line(line)
+            if 0 in tokens_dict and tokens_dict[0]['cnt']==1: #There is only 1 empty square in this line
+                winner_sqr = tokens_dict[0]['sqrs'][0] #the blank square in a winning line
+                if 1 in tokens_dict and tokens_dict[1]['cnt']==ROWS-1:
+                    winning_token = 1                    
+                elif 2 in tokens_dict and tokens_dict[2]['cnt']==ROWS-1 :
+                    winning_token = 2
+                break        
+        return winning_token, winner_sqr       
 
      #Loop through the lines and check if there's a win in 1 move for chosen player
-    def get_winning_sqr_for_player(self, player, win):
-        if win == 0:
-            winner_sqr = ()
-            for line in LINES_DICT:
-                tokens_dict = self.get_sqrs_by_line(line)
-                if ((0 in tokens_dict and tokens_dict[0]['cnt']==1) and (player in tokens_dict and tokens_dict[player]['cnt']==ROWS-1 )): 
-                    winner_sqr = tokens_dict[0]['sqrs'][0] #the blank square in a winning line
-                    return winner_sqr
-                    break        
-        
-        else:
-           for line in LINES_DICT:
-               tokens_dict = self.get_sqrs_by_line(line)
-               if not 0 in tokens_dict and (tokens_dict[player]['cnt'] == ROWS):
-                   print ("hello")
-                   col = tokens_dict[player]['sqrs'][0][1]
-                   row = tokens_dict[player]['sqrs'][0][0]
-                   if 'H' in line:
-                       start_x = col * SQSIZE + SQSIZE // 2
-                       start_y = row * SQSIZE
-                       end_x = col * SQSIZE + SQSIZE // 2
-                       end_y = (row + ROWS - 1) * SQSIZE
-                       pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
-                   if 'R' in line:
-                         start_x = col * SQSIZE + SQSIZE // 2
-                         start_y = row * SQSIZE
-                         end_x = col * SQSIZE + SQSIZE // 2
-                         end_y = (row + ROWS) * SQSIZE
-                         pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)   
-                   return True
-        
+    def get_winning_sqr_for_player(self, player):
+        winner_sqr = ()
+        for line in LINES_DICT:
+            tokens_dict = self.get_sqrs_by_line(line)
+            if ((0 in tokens_dict and tokens_dict[0]['cnt']==1) and (player in tokens_dict and tokens_dict[player]['cnt']==ROWS-1 )): 
+                winner_sqr = tokens_dict[0]['sqrs'][0] #the blank square in a winning line
+                break        
+        return winner_sqr
             
 
     def mark_sqr(self, row, col, player):
@@ -283,11 +258,11 @@ class AI:
 
     def eval(self, main_board):
         if self.level == 0:
-            move = main_board.get_winning_sqr_for_player(2, 0)
+            move = main_board.get_winning_sqr_for_player(2)
             if move: #Check if win for AI in 1
                 eval = 1
             else:
-                move = main_board.get_winning_sqr_for_player(1, 0)   
+                move = main_board.get_winning_sqr_for_player(1)   
                 if move: #Check if loss for AI in 1
                     eval = 0 #Avoid loss and at least try for a draw if not a win
                 else:    
@@ -362,10 +337,8 @@ class Game:
     def change_gamemode(self):
         self.gamemode = 'ai' if self.gamemode == 'pvp' else 'pvp'
 
-    def isover(self, player):
-        #return self.board.final_state(show=True) != 0 or self.board.isfull()
-        return self.board.get_winning_sqr_for_player(player, 1) or self.board.isfull()
-    
+    def isover(self):
+        return self.board.final_state(show=True) != 0 or self.board.isfull()
 
     def reset(self):
         self.__init__()
@@ -421,7 +394,7 @@ def main():
                 if board.empty_sqr(row, col) and game.running:
                     game.make_move(row, col)
 
-                    if game.isover(ai.player):
+                    if game.isover():
                         game.running = False
 
 
@@ -435,7 +408,7 @@ def main():
             row, col = ai.eval(board)
             game.make_move(row, col)
 
-            if game.isover(ai.player):
+            if game.isover():
                 game.running = False
             
         pygame.display.update()
