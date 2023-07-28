@@ -12,7 +12,26 @@ import numpy as np
 
 INF = 1
 LINES = ('H1', 'H2', 'H3', 'H4', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2')
-
+LINES_DICT = {'H1':
+            ((0,0),(0,1),(0,2),(0,3)), 
+'H2':
+            ((1,0),(1,1),(1,2),(1,3)),     
+'H3':
+            ((2,0),(2,1),(2,2),(2,3)),     
+'H4':
+            ((3,0),(3,1),(3,2),(3,3)),     
+'C1':
+            ((0,0),(1,0),(2,0),(3,0)),     
+'C2':
+            ((0,1),(1,1),(2,1),(3,1)),          
+'C3':
+            ((0,2),(1,2),(2,2),(3,2)),     
+'C4':
+            ((0,3),(1,3),(2,3),(3,3)),     
+'D1':
+            ((0,0),(1,1),(2,2),(3,3)),     
+'D2':
+            ((3,0),(2,1),(1,2),(0,3))}
 # --- PIXELS ---
 
 WIDTH = 600
@@ -100,6 +119,36 @@ class Board:
 
         # no win yet
         return 0
+
+    #--Get the count of each player(token) for each winning line so we can check if there is a win or loss in 1
+    def get_sqrs_by_line(self, line, tokens_dict):
+        tokens_dict = {}
+        for sqr in (LINES_DICT[line]):
+            token =  (self.squares(sqr))
+            if token in tokens_dict:
+                token_cnt = tokens_dict[token]['cnt'] + 1
+            else:
+                token_cnt = 1    
+            tokens_dict[token]['cnt'] = token_cnt
+            tokens_dict[token]['sqrs'].append(sqr)
+                
+
+    def checkMove (self):
+        v = 0
+        tokens_dict= {}
+        for key in LINES_DICT:
+            print (key)
+            self.get_sqrs_by_line( key, tokens_dict)
+            if tokens_dict[2]['cnt'] == 3 and tokens_dict[0]['cnt'] == 1:
+                 v = 1
+                 return tokens_dict[0]['sqrs']
+        for key in LINES_DICT:
+            Board.get_sqrs_by_line( key, tokens_dict)
+            if tokens_dict[1]['cnt'] == 3 and tokens_dict[0]['cnt'] == 1:
+                v = 1
+                return tokens_dict[0]['sqrs']
+        if not v == 1:
+            return None
         
     def mark_sqr(self, row, col, player):
         self.squares[row][col] = player
@@ -198,12 +247,16 @@ class AI:
         if self.level == 0:
             # random choice
             eval = 'random'
-            move = self.rnd(main_board)
+            if main_board.checkMove(self) == None:
+                move = self.rnd(main_board)
+            else:
+                move = main_board.checkMove(self)
 
         else:
             # minimax algo choice
             eval, move = self.minimax(0, main_board, -2, 2, False)
 
+        print(f'AI has chosen to mark the square in pos {move} with an eval of: {eval}')
 
         return move # row, col
 

@@ -37,7 +37,7 @@ CIRCLE2_COLOUR = (0, 0, 0)
 
 pygame.init()
 screen = pygame.display.set_mode( (WIDTH, HEIGHT) )
-pygame.display.set_caption('TIC TAC TOE AI')
+pygame.display.set_caption('Longest Line Game')
 screen.fill( BG_COLOUR )
 
 # --- CLASSES ---
@@ -132,7 +132,6 @@ class AI:
     def minimax(self, board, maximizing, depth):
         depth += 1 
         print ("depth is:" + str(depth))
-        print (board.squares)
         # terminal case
         case = board.final_state()
 

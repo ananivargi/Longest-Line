@@ -37,7 +37,7 @@ CIRCLE2_COLOUR = (0, 0, 0)
 
 pygame.init()
 screen = pygame.display.set_mode( (WIDTH, HEIGHT) )
-pygame.display.set_caption('TIC TAC TOE AI')
+pygame.display.set_caption('Longest Line Game')
 screen.fill( BG_COLOUR )
 
 # --- CLASSES ---
@@ -203,9 +203,17 @@ class Game:
         self.ai = AI(level=2)
         self.player = 1
         self.gamemode = 'ai'
+        self.running = False
+    
+    def reset(self):
+        self.__init__()
+
+    def set_gamemode(self, gamemode):
+        self.gamemode = gamemode
         self.running = True
 
     # --- DRAW METHODS ---
+    
 
     def show_lines(self):
     # Calculate square size based on the number of rows and columns
@@ -227,14 +235,6 @@ class Game:
 
     def draw_fig(self, row, col):
         if self.player == 1:
-            # draw cross
-            # desc line
-            #start_desc = (col * SQSIZE + OFFSET, row * SQSIZE + OFFSET)
-            #end_desc = (col * SQSIZE + SQSIZE - OFFSET, row * SQSIZE + SQSIZE - OFFSET)
-            #pygame.draw.line(screen, CROSS_COLOUR, start_desc, end_desc, CROSS_WIDTH)
-            # asc line
-            #start_asc = (col * SQSIZE + OFFSET, row * SQSIZE + SQSIZE - OFFSET)
-            #end_asc = (col * SQSIZE + SQSIZE - OFFSET, row * SQSIZE + OFFSET)
             pygame.draw.circle(screen, CIRCLE1_COLOUR, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), CIRCLE_RADIUS)
         
         elif self.player == 2:
@@ -262,20 +262,15 @@ class Game:
         self.__init__()
 
 def homepage():
-    # --- HOMEPAGE DRAW METHODS ---
-
-    def draw_homepage():
-        screen.fill(BG_COLOUR)
-        font = pygame.font.Font(None, 50)
-        text_pvp = font.render("PvP", True, (255, 255, 255))
-        text_easy_ai = font.render("Easy AI", True, (255, 255, 255))
-        text_hard_ai = font.render("Hard AI", True, (255, 255, 255))
-        screen.blit(text_pvp, (WIDTH // 2 - text_pvp.get_width() // 2, HEIGHT // 2 - 100))
-        screen.blit(text_easy_ai, (WIDTH // 2 - text_easy_ai.get_width() // 2, HEIGHT // 2))
-        screen.blit(text_hard_ai, (WIDTH // 2 - text_hard_ai.get_width() // 2, HEIGHT // 2 + 100))
-        pygame.display.update()
-
-    # --- HOMEPAGE MAINLOOP ---
+    screen.fill(BG_COLOUR)
+    font = pygame.font.Font(None, 50)
+    text_pvp = font.render("PvP", True, (255, 255, 255))
+    text_easy_ai = font.render("Easy AI", True, (255, 255, 255))
+    text_hard_ai = font.render("Hard AI", True, (255, 255, 255))
+    screen.blit(text_pvp, (WIDTH // 2 - text_pvp.get_width() // 2, HEIGHT // 2 - 100))
+    screen.blit(text_easy_ai, (WIDTH // 2 - text_easy_ai.get_width() // 2, HEIGHT // 2))
+    screen.blit(text_hard_ai, (WIDTH // 2 - text_hard_ai.get_width() // 2, HEIGHT // 2 + 100))
+    pygame.display.update()
 
     while True:
         for event in pygame.event.get():
@@ -291,7 +286,7 @@ def homepage():
                         return 'easy_ai'
                     elif HEIGHT // 2 + 80 <= pos[1] <= HEIGHT // 2 + 120:
                         return 'hard_ai'
-        draw_homepage()
+
 
 
 def main():
@@ -306,6 +301,12 @@ def main():
         ai.level = 0
     elif gamemode == 'hard_ai':
         ai.level = 1
+        
+    game.set_gamemode(gamemode)
+    screen.fill(BG_COLOUR)
+    game.show_lines()
+    #board = game.board
+    #pygame.display.update()
 
     # --- MAINLOOP ---
     while True:
