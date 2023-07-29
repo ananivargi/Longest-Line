@@ -28,7 +28,7 @@ RADIUS = SQSIZE // 4
 OFFSET = 50
 
 # --- COLORS ---
-
+RED = (255, 0, 0)
 BG_COLOUR = (28, 170, 156)
 LINE_COLOUR = (23, 145, 135)
 CIRCLE1_COLOUR = (239, 231, 200)
@@ -47,7 +47,7 @@ class Board:
 
     def __init__(self):
         self.squares = np.zeros( (ROWS, COLS) )
-        self.empty_sqrs = self.squares # [squares]
+        self.empty_sqrs = np.copy(self.squares) # [squares]
         self.marked_sqrs = 0
 
     def final_state(self, show=False):
@@ -58,38 +58,53 @@ class Board:
         '''
 
         # vertical wins
-def final_state(self, show=False):
-    '''
-    @return 0 if there is no win yet
-    @return 1 if player 1 wins
-    @return 2 if player 2 wins
-    '''
+    def final_state(self, show=False):
 
     # vertical wins
-    for col in range(COLS):
-        for row in range(ROWS - 5):  # Change from -4 to -5
-            if self.squares[row][col] == self.squares[row + 1][col] == self.squares[row + 2][col] == self.squares[row + 3][col] == self.squares[row + 4][col] != 0:
-                return self.squares[row][col]
+        for col in range(COLS):
+            for row in range(ROWS - 5):  # Change from -4 to -5
+                if self.squares[row][col] == self.squares[row + 1][col] == self.squares[row + 2][col] == self.squares[row + 3][col] == self.squares[row + 4][col] != 0:
+                        start_x = col * SQSIZE + SQSIZE // 2
+                        start_y = row * SQSIZE
+                        end_x = col * SQSIZE + SQSIZE // 2
+                        end_y = (row + ROWS) * SQSIZE
+                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                        return self.squares[row][col]
 
     # Check for horizontal win
-    for row in range(ROWS):
-        for col in range(COLS - 5):  # Change from -4 to -5
-            if self.squares[row][col] == self.squares[row][col + 1] == self.squares[row][col + 2] == self.squares[row][col + 3] == self.squares[row][col + 4] != 0:
-                return self.squares[row][col]
+        for row in range(ROWS):
+            for col in range(COLS - 5):  # Change from -4 to -5
+                if self.squares[row][col] == self.squares[row][col + 1] == self.squares[row][col + 2] == self.squares[row][col + 3] == self.squares[row][col + 4] != 0:
+                       start_x = col * SQSIZE
+                       start_y = row * SQSIZE + SQSIZE // 2
+                       end_x = (col + ROWS) * SQSIZE
+                       end_y = row * SQSIZE + SQSIZE // 2
+                       pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                       return self.squares[row][col]
 
     # Check for ascending diagonal win
-    for row in range(4, ROWS):  # Change from 4 to 5
-        for col in range(COLS - 5):  # Change from -4 to -5
-            if self.squares[row][col] == self.squares[row - 1][col + 1] == self.squares[row - 2][col + 2] == self.squares[row - 3][col + 3] == self.squares[row - 4][col + 4] != 0:
-                return self.squares[row][col]
+        for row in range(5, ROWS):  # Change from 4 to 5
+            for col in range(COLS - 5):  # Change from -4 to -5
+                if self.squares[row][col] == self.squares[row - 1][col + 1] == self.squares[row - 2][col + 2] == self.squares[row - 3][col + 3] == self.squares[row - 4][col + 4] != 0:
+                        start_x = col * SQSIZE
+                        start_y = (row + 1) * SQSIZE
+                        end_x = (col + 5) * SQSIZE
+                        end_y = (row - 4) * SQSIZE
+                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)  
+                        return self.squares[row][col]
 
     # Check for descending diagonal win
-    for row in range(ROWS - 5):  # Change from -4 to -5
-        for col in range(COLS - 5):  # Change from -4 to -5
-            if self.squares[row][col] == self.squares[row + 1][col + 1] == self.squares[row + 2][col + 2] == self.squares[row + 3][col + 3] == self.squares[row + 4][col + 4] != 0:
-                return self.squares[row][col]
+        for row in range(ROWS - 5):  # Change from -4 to -5
+            for col in range(COLS - 5):  # Change from -4 to -5
+                if self.squares[row][col] == self.squares[row + 1][col + 1] == self.squares[row + 2][col + 2] == self.squares[row + 3][col + 3] == self.squares[row + 4][col + 4] != 0:
+                        start_x = col * SQSIZE
+                        start_y = row * SQSIZE
+                        end_x = (col + 5) * SQSIZE
+                        end_y = (row + 5) * SQSIZE
+                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)  
+                        return self.squares[row][col]
 
-    return 0
+        return 0
     def mark_sqr(self, row, col, player):
         self.squares[row][col] = player
         self.marked_sqrs += 1
@@ -327,7 +342,7 @@ def main():
                 row = pos[1] // SQSIZE
                 col = pos[0] // SQSIZE
                 # human mark sqr
-                if board.empty_sqrs(row, col) and game.running:
+                if board.empty_sqr(row, col) and game.running:
                     game.make_move(row, col)
                     if game.isover():
                         game.running = False
