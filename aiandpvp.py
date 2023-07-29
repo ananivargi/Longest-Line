@@ -172,18 +172,33 @@ class Board:
                    print ("hello")
                    col = tokens_dict[player]['sqrs'][0][1]
                    row = tokens_dict[player]['sqrs'][0][0]
-                   if 'H' in line:
-                       start_x = col * SQSIZE + SQSIZE // 2
-                       start_y = row * SQSIZE
-                       end_x = col * SQSIZE + SQSIZE // 2
-                       end_y = (row + ROWS - 1) * SQSIZE
-                       pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                   #Draw Winning Lines
                    if 'R' in line:
+                       print ("bello")
+                       start_x = col * SQSIZE
+                       start_y = row * SQSIZE + SQSIZE // 2
+                       end_x = (col + 5) * SQSIZE
+                       end_y = row * SQSIZE + SQSIZE // 2
+                       pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                   if 'C' in line:
+                         print ("bello")
                          start_x = col * SQSIZE + SQSIZE // 2
                          start_y = row * SQSIZE
                          end_x = col * SQSIZE + SQSIZE // 2
                          end_y = (row + ROWS) * SQSIZE
-                         pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)   
+                         pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                   if 'D1' in line:
+                        start_x = col * SQSIZE
+                        start_y = row * SQSIZE
+                        end_x = (col + 5) * SQSIZE
+                        end_y = (row + 5) * SQSIZE
+                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)   
+                   if 'D2' in line:
+                        start_x = col * SQSIZE
+                        start_y = (row + 1) * SQSIZE
+                        end_x = (col + 5) * SQSIZE
+                        end_y = (row - 4) * SQSIZE
+                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)    
                    return True
         
             
