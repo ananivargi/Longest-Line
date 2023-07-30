@@ -12,7 +12,7 @@ import numpy as np
 
 INF = 1
 #LINES = ('R1', 'R2', 'R3', 'R4', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2')
-LINES_DICT = {'R1':
+""" LINES_DICT = {'R1':
             ((0,0),(0,1),(0,2),(0,3)), 
 'R2':
             ((1,0),(1,1),(1,2),(1,3)),     
@@ -31,7 +31,7 @@ LINES_DICT = {'R1':
 'D1':
             ((0,0),(1,1),(2,2),(3,3)),     
 'D2':
-            ((3,0),(2,1),(1,2),(0,3))}
+            ((3,0),(2,1),(1,2),(0,3))} """
 # --- PIXELS ---
 
 WIDTH = 600
@@ -44,23 +44,23 @@ SQSIZE = WIDTH // COLS
 LINE_WIDTH = 15
 CIRC_WIDTH = 15
 CROSS_WIDTH = 20
-
+WIN_LINE_WIDTH = 15
 RADIUS = SQSIZE // 4
 
 OFFSET = 50
 
 # --- COLORS ---
-
+RED = (255, 0, 0)
 BG_COLOR = (28, 170, 156)
 LINE_COLOR = (23, 145, 135)
-CIRC_COLOR = (239, 231, 200)
-CROSS_COLOR = (66, 66, 66)
+CIRC1_COLOR = (239, 231, 200)
+CIRC2_COLOR = (66, 66, 66)
 
 # --- PYGAME SETUP ---
 
 pygame.init()
 screen = pygame.display.set_mode( (WIDTH, HEIGHT) )
-pygame.display.set_caption('TIC TAC TOE AI')
+pygame.display.set_caption('Longest Line Game!')
 screen.fill( BG_COLOR )
 
 # --- CLASSES ---
@@ -71,6 +71,7 @@ class Board:
         self.squares = np.zeros( (ROWS, COLS) )
         self.empty_sqrs = self.squares # [squares]
         self.marked_sqrs = 0
+        self.lines_dict = self.set_lines_dict()
 
     def final_state(self, show=False):
         '''
@@ -78,52 +79,83 @@ class Board:
             @return 1 if player 1 wins
             @return 2 if player 2 wins
         '''
+        win = False
+        for line in self.lines_dict:
+            tokens_dict = self.get_sqrs_by_line(line)            
+            for token in tokens_dict:
+                if token!=0 and tokens_dict[token]['cnt'] == ROWS:
+                    (row, col) = self.lines_dict[line][0]
+                    print (f"Player: {token} has won at line: {line} starting at row: {row} ,  col: {col}")
+                    win = True
+                    if 'C' in line:
+                           start_x = col * SQSIZE + SQSIZE // 2
+                           start_y = row * SQSIZE
+                           end_x = col * SQSIZE + SQSIZE // 2
+                           end_y = (row + ROWS) * SQSIZE
+                           pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                    if 'R' in line:
+                        start_x = col * SQSIZE
+                        start_y = row * SQSIZE + SQSIZE // 2
+                        end_x = (col + ROWS) * SQSIZE
+                        end_y = row * SQSIZE + SQSIZE // 2
+                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                    if 'D0' in line:
+                         start_x = col * SQSIZE
+                         start_y = row * SQSIZE
+                         end_x = (col + ROWS) * SQSIZE
+                         end_y = (row + ROWS) * SQSIZE
+                         pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
+                    if 'D1' in line:
+                        start_x = col * SQSIZE
+                        start_y = (row + 1) * SQSIZE
+                        end_x = (col + ROWS) * SQSIZE
+                        end_y = (row - ROWS + 1) * SQSIZE
+                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
 
-        # vertical wins
-        for col in range(COLS):
-            if self.squares[0][col] == self.squares[1][col] == self.squares[2][col] == self.squares[3][col] != 0:
-                if show:
-                    color = CIRC_COLOR if self.squares[0][col] == 2 else CROSS_COLOR
-                    iPos = (col * SQSIZE + SQSIZE // 2, 20)
-                    fPos = (col * SQSIZE + SQSIZE // 2, HEIGHT - 20)
-                    pygame.draw.line(screen, color, iPos, fPos, LINE_WIDTH)
-                return self.squares[0][col]
+                    break
+        if win == False:
+            return 0
+            #if win: break    
 
-        # horizontal wins
-        for row in range(ROWS):
-            if self.squares[row][0] == self.squares[row][1] == self.squares[row][2] == self.squares[row][3] != 0:
-                if show:
-                    color = CIRC_COLOR if self.squares[row][0] == 2 else CROSS_COLOR
-                    iPos = (20, row * SQSIZE + SQSIZE // 2)
-                    fPos = (WIDTH - 20, row * SQSIZE + SQSIZE // 2)
-                    pygame.draw.line(screen, color, iPos, fPos, LINE_WIDTH)
-                return self.squares[row][0]
-
-        # desc diagonal
-        if self.squares[0][0] == self.squares[1][1] == self.squares[2][2]  == self.squares[3][3] != 0:
-            if show:
-                color = CIRC_COLOR if self.squares[1][1] == 2 else CROSS_COLOR
-                iPos = (20, 20)
-                fPos = (WIDTH - 20, HEIGHT - 20)
-                pygame.draw.line(screen, color, iPos, fPos, CROSS_WIDTH)
-            return self.squares[1][1]
-
-        # asc diagonal
-        if self.squares[3][0] == self.squares[2][1] == self.squares[1][2] == self.squares[0][3]  != 0:
-            if show:
-                color = CIRC_COLOR if self.squares[2][1] == 2 else CROSS_COLOR
-                iPos = (20, HEIGHT - 20)
-                fPos = (WIDTH - 20, 20)
-                pygame.draw.line(screen, color, iPos, fPos, CROSS_WIDTH)
-            return self.squares[2][1]
-
-        # no win yet
-        return 0
     
-    #--Get the count of each player(token) for each winning line so we can check if there is a win (or loss) in 1 move
+    #--Generate dict of winning lines for board
+    def set_lines_dict(self):
+        lines_dict = {}    
+        #Loop for line keys
+        line_types = ('R','C','D') #Rows, Cols, Diagonals
+        for line_type in line_types:
+            if line_type == 'R': #Row lines
+                for row in range(ROWS):
+                    line_key = line_type + str(row)
+                    lines_dict[line_key] = []
+                    for col in range(COLS):
+                        lines_dict[line_key].append((row, col))    
+            elif line_type == 'C': #Column lines
+                for col in range(COLS):
+                    line_key = line_type + str(col)
+                    lines_dict[line_key] = []
+                    for row in range(ROWS):
+                        lines_dict[line_key].append((row, col))
+            else:
+                line_type == 'D' #Diagonals
+                #Descending diagonal
+                line_key = line_type + '0'
+                lines_dict[line_key] = []
+                for idx in range(ROWS):
+                    lines_dict[line_key].append((idx, idx))
+                
+                #Ascending diagonal
+                line_key = line_type + '1'
+                lines_dict[line_key] = []
+                for idx in range(ROWS):
+                    lines_dict[line_key].append((COLS-1-idx, idx))    
+        return lines_dict
+        
+    
+    #--Get the count of each player(token) for each winning line so we can check if there is a win (or loss) NOW or in 1 move
     def get_sqrs_by_line(self, line):
         tokens_dict = {}
-        for sqr in (LINES_DICT[line]):
+        for sqr in (self.lines_dict[line]):
             token =  self.squares[sqr]
             if token in tokens_dict:
                 token_cnt = tokens_dict[token]['cnt'] + 1                
@@ -133,7 +165,7 @@ class Board:
                 token_cnt = 1    
                
             tokens_dict[token]['cnt'] = token_cnt
-            if (token==0 and  token_cnt>1) : break #If there's >1 empty sqr in this line, there is no immediate win/loss for the line
+            #if (token==0 and  token_cnt>1) : break #If there's >1 empty sqr in this line, there is no immediate win/loss for the line
             tokens_dict[token]['sqrs'].append(sqr)
         return tokens_dict
                 
@@ -141,7 +173,7 @@ class Board:
     def get_winning_sqr(self):
         winning_token = None
         winner_sqr = ()
-        for line in LINES_DICT:
+        for line in self.lines_dict:
             tokens_dict = self.get_sqrs_by_line(line)
             if 0 in tokens_dict and tokens_dict[0]['cnt']==1: #There is only 1 empty square in this line
                 winner_sqr = tokens_dict[0]['sqrs'][0] #the blank square in a winning line
@@ -155,7 +187,7 @@ class Board:
      #Loop through the lines and check if there's a win in 1 move for chosen player
     def get_winning_sqr_for_player(self, player):
         winner_sqr = ()
-        for line in LINES_DICT:
+        for line in self.lines_dict:
             tokens_dict = self.get_sqrs_by_line(line)
             if ((0 in tokens_dict and tokens_dict[0]['cnt']==1) and (player in tokens_dict and tokens_dict[player]['cnt']==ROWS-1 )): 
                 winner_sqr = tokens_dict[0]['sqrs'][0] #the blank square in a winning line
@@ -292,10 +324,7 @@ class Game:
 
     def show_lines(self):
         # bg
-        SQSIZE = min(HEIGHT // ROWS, WIDTH // COLS)
-
-        # bg
-        screen.fill(BG_COLOR)
+        screen.fill( BG_COLOR )
 
         # Draw vertical lines
         for col in range(1, COLS):
@@ -307,22 +336,23 @@ class Game:
             y = row * SQSIZE
             pygame.draw.line(screen, LINE_COLOR, (0, y), (WIDTH, y), LINE_WIDTH)
 
+        # # vertical
+        # pygame.draw.line(screen, LINE_COLOR, (SQSIZE, 0), (SQSIZE, HEIGHT), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (SQSIZE * 2, 0), (SQSIZE * 2, HEIGHT), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (WIDTH - SQSIZE, 0), (WIDTH - SQSIZE, HEIGHT), LINE_WIDTH)
+
+        # # horizontal
+        # pygame.draw.line(screen, LINE_COLOR, (0, SQSIZE), (WIDTH, SQSIZE), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (0, SQSIZE * 2), (WIDTH, SQSIZE * 2), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (0, HEIGHT - SQSIZE), (WIDTH, HEIGHT - SQSIZE), LINE_WIDTH)
+
     def draw_fig(self, row, col):
         if self.player == 1:
-            # draw cross
-            # desc line
-            start_desc = (col * SQSIZE + OFFSET, row * SQSIZE + OFFSET)
-            end_desc = (col * SQSIZE + SQSIZE - OFFSET, row * SQSIZE + SQSIZE - OFFSET)
-            pygame.draw.line(screen, CROSS_COLOR, start_desc, end_desc, CROSS_WIDTH)
-            # asc line
-            start_asc = (col * SQSIZE + OFFSET, row * SQSIZE + SQSIZE - OFFSET)
-            end_asc = (col * SQSIZE + SQSIZE - OFFSET, row * SQSIZE + OFFSET)
-            pygame.draw.line(screen, CROSS_COLOR, start_asc, end_asc, CROSS_WIDTH)
+            pygame.draw.circle(screen, CIRC1_COLOR, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), RADIUS)
         
         elif self.player == 2:
             # draw circle
-            center = (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2)
-            pygame.draw.circle(screen, CIRC_COLOR, center, RADIUS, CIRC_WIDTH)
+            pygame.draw.circle(screen, CIRC2_COLOR, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), RADIUS)
 
     # --- OTHER METHODS ---
 

@@ -53,8 +53,8 @@ OFFSET = 50
 RED = (255, 0, 0)
 BG_COLOR = (28, 170, 156)
 LINE_COLOR = (23, 145, 135)
-CIRC_COLOR = (239, 231, 200)
-CROSS_COLOR = (66, 66, 66)
+CIRC1_COLOR = (239, 231, 200)
+CIRC2_COLOR = (66, 66, 66)
 
 # --- PYGAME SETUP ---
 
@@ -83,7 +83,7 @@ class Board:
         for col in range(COLS):
             if self.squares[0][col] == self.squares[1][col] == self.squares[2][col] == self.squares[3][col] != 0:
                 if show:
-                    color = CIRC_COLOR if self.squares[0][col] == 2 else CROSS_COLOR
+                    color = CIRC_COLOR if self.squares[0][col] == 2 else CIRC2_COLOR
                     iPos = (col * SQSIZE + SQSIZE // 2, 20)
                     fPos = (col * SQSIZE + SQSIZE // 2, HEIGHT - 20)
                     pygame.draw.line(screen, color, iPos, fPos, LINE_WIDTH)
@@ -93,7 +93,7 @@ class Board:
         for row in range(ROWS):
             if self.squares[row][0] == self.squares[row][1] == self.squares[row][2] == self.squares[row][3] != 0:
                 if show:
-                    color = CIRC_COLOR if self.squares[row][0] == 2 else CROSS_COLOR
+                    color = CIRC_COLOR if self.squares[row][0] == 2 else CIRC2_COLOR
                     iPos = (20, row * SQSIZE + SQSIZE // 2)
                     fPos = (WIDTH - 20, row * SQSIZE + SQSIZE // 2)
                     pygame.draw.line(screen, color, iPos, fPos, LINE_WIDTH)
@@ -102,7 +102,7 @@ class Board:
         # desc diagonal
         if self.squares[0][0] == self.squares[1][1] == self.squares[2][2]  == self.squares[3][3] != 0:
             if show:
-                color = CIRC_COLOR if self.squares[1][1] == 2 else CROSS_COLOR
+                color = CIRC_COLOR if self.squares[1][1] == 2 else CIRC2_COLOR
                 iPos = (20, 20)
                 fPos = (WIDTH - 20, HEIGHT - 20)
                 pygame.draw.line(screen, color, iPos, fPos, CROSS_WIDTH)
@@ -111,7 +111,7 @@ class Board:
         # asc diagonal
         if self.squares[3][0] == self.squares[2][1] == self.squares[1][2] == self.squares[0][3]  != 0:
             if show:
-                color = CIRC_COLOR if self.squares[2][1] == 2 else CROSS_COLOR
+                color = CIRC_COLOR if self.squares[2][1] == 2 else CIRC2_COLOR
                 iPos = (20, HEIGHT - 20)
                 fPos = (WIDTH - 20, 20)
                 pygame.draw.line(screen, color, iPos, fPos, CROSS_WIDTH)
@@ -349,20 +349,11 @@ class Game:
 
     def draw_fig(self, row, col):
         if self.player == 1:
-            # draw cross
-            # desc line
-            start_desc = (col * SQSIZE + OFFSET, row * SQSIZE + OFFSET)
-            end_desc = (col * SQSIZE + SQSIZE - OFFSET, row * SQSIZE + SQSIZE - OFFSET)
-            pygame.draw.line(screen, CROSS_COLOR, start_desc, end_desc, CROSS_WIDTH)
-            # asc line
-            start_asc = (col * SQSIZE + OFFSET, row * SQSIZE + SQSIZE - OFFSET)
-            end_asc = (col * SQSIZE + SQSIZE - OFFSET, row * SQSIZE + OFFSET)
-            pygame.draw.line(screen, CROSS_COLOR, start_asc, end_asc, CROSS_WIDTH)
+            pygame.draw.circle(screen, CIRC1_COLOR, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), RADIUS)
         
         elif self.player == 2:
             # draw circle
-            center = (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2)
-            pygame.draw.circle(screen, CIRC_COLOR, center, RADIUS, CIRC_WIDTH)
+            pygame.draw.circle(screen, CIRC2_COLOR, (col * SQSIZE + SQSIZE // 2, row * SQSIZE + SQSIZE // 2), RADIUS)
 
     # --- OTHER METHODS ---
 
