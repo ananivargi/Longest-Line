@@ -44,7 +44,7 @@ CIRCLE_RADIUS = SQSIZE // 3
 
 pygame.init()
 screen = pygame.display.set_mode( (WIDTH, HEIGHT) )
-pygame.display.set_caption('TIC TAC TOE AI')
+pygame.display.set_caption('Longest Line Game!')
 screen.fill( BG_COLOR )
 
 # --- CLASSES ---
