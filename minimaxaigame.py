@@ -14,8 +14,8 @@ import numpy as np
 WIDTH = 800
 HEIGHT = 800
 
-ROWS = 4
-COLS = 4
+ROWS = 3
+COLS = 3
 SQSIZE = WIDTH // COLS
 
 LINE_WIDTH = 15

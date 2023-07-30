@@ -12,15 +12,7 @@ A player’s line can’t touch the same dot as the other player
 If there are no possible moves for even one player, the game ends and the length of the lines is calculated (ie you might have blocked the other person from making any move but still lose because your line is shorter)
 
 ## PVP GUI rules
-The game is played on a grid of size 7x7.
-
-Two players take turns marking a square on the grid. Player 1 uses white circles, and Player 2 uses black circles.
-
-The objective of the game is to form the longest line (vertical, horizontal, or diagonal) of your own circles on the board.
-
-The game ends when one of the players forms a line of 5 circles in a row (horizontally, vertically, or diagonally).
-
-If all squares on the board are filled and no player has formed a line of 5, the game ends in a draw.
+The game is played on a grid of size 7x7. Two players take turns marking a square on the grid. Player 1 uses white circles, and Player 2 uses black circles. The objective of the game is to form the longest line (vertical, horizontal, or diagonal) of your own circles on the board. The game ends when one of the players forms a line of 5 circles in a row (horizontally, vertically, or diagonally). If all squares on the board are filled and no player has formed a line of 5, the game ends in a draw.
 
 How the Game Works:
 The game starts with an empty 7x7 grid.
@@ -95,6 +87,6 @@ To restart the game, press the "r" key on the keyboard. The game will reset with
 The homepage code works the same as the 'AIANDPVP' however it has a homepage that allows the user to visualise their options and simply click on one. 
 
 ## Finalguiversion
-The final version is, ultimately, the end project. This version contains the AI that chooses its moves based on whether there is a win/loss in one and if there isn't, it will pick a random move. Furthermore, I have made this code so that nothing is hard-coded and, essentialy, you can choose any grid size you would like to play the game on and it will work. This involved changing the win function, the drawing the winning line fnuction, and using loops to created the dictionary with the possible lines. It still has the minimax and alpha-beta pruning however that will not work, as mentioned above. 
+The final version is, ultimately, the end project. This version contains the AI that chooses its moves based on whether there is a win/loss in one and if there isn't, it will pick a random move. Furthermore, I have made this code so that nothing is hard-coded and, essentialy, you can choose any grid size you would like to play the game on and it will work. This involved changing the win function, the drawing the winning line fnuction, and using loops to created the dictionary with the possible lines. It still has the minimax and alpha-beta pruning however the 3 x 3 grid is the biggest possible size in which the AI can return a move in a resonable amount of time. 
 
 

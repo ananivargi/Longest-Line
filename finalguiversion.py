@@ -11,50 +11,31 @@ import numpy as np
 # ---------
 
 INF = 1
-#LINES = ('R1', 'R2', 'R3', 'R4', 'C1', 'C2', 'C3', 'C4', 'D1', 'D2')
-""" LINES_DICT = {'R1':
-            ((0,0),(0,1),(0,2),(0,3)), 
-'R2':
-            ((1,0),(1,1),(1,2),(1,3)),     
-'R3':
-            ((2,0),(2,1),(2,2),(2,3)),     
-'R4':
-            ((3,0),(3,1),(3,2),(3,3)),     
-'C1':
-            ((0,0),(1,0),(2,0),(3,0)),     
-'C2':
-            ((0,1),(1,1),(2,1),(3,1)),          
-'C3':
-            ((0,2),(1,2),(2,2),(3,2)),     
-'C4':
-            ((0,3),(1,3),(2,3),(3,3)),     
-'D1':
-            ((0,0),(1,1),(2,2),(3,3)),     
-'D2':
-            ((3,0),(2,1),(1,2),(0,3))} """
+
 # --- PIXELS ---
 
 WIDTH = 600
 HEIGHT = 600
 
-ROWS = 5
-COLS = 5
+ROWS = 3
+COLS = 3
 SQSIZE = WIDTH // COLS
 
 LINE_WIDTH = 15
 CIRC_WIDTH = 15
 CROSS_WIDTH = 20
-WIN_LINE_WIDTH = 15
+
 RADIUS = SQSIZE // 4
 
 OFFSET = 50
 
 # --- COLORS ---
-RED = (255, 0, 0)
+
 BG_COLOR = (28, 170, 156)
 LINE_COLOR = (23, 145, 135)
 CIRC1_COLOR = (239, 231, 200)
 CIRC2_COLOR = (66, 66, 66)
+RED = (255, 0, 0)
 
 # --- PYGAME SETUP ---
 
@@ -79,44 +60,37 @@ class Board:
             @return 1 if player 1 wins
             @return 2 if player 2 wins
         '''
-        win = False
+        iPos = fPos= win = 0
         for line in self.lines_dict:
             tokens_dict = self.get_sqrs_by_line(line)            
             for token in tokens_dict:
                 if token!=0 and tokens_dict[token]['cnt'] == ROWS:
                     (row, col) = self.lines_dict[line][0]
-                    print (f"Player: {token} has won at line: {line} starting at row: {row} ,  col: {col}")
+                    #print (f"Player: {token} has won at line: {line} starting at row: {row} ,  col: {col}")
                     win = True
-                    if 'C' in line:
-                           start_x = col * SQSIZE + SQSIZE // 2
-                           start_y = row * SQSIZE
-                           end_x = col * SQSIZE + SQSIZE // 2
-                           end_y = (row + ROWS) * SQSIZE
-                           pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
-                    if 'R' in line:
-                        start_x = col * SQSIZE
-                        start_y = row * SQSIZE + SQSIZE // 2
-                        end_x = (col + ROWS) * SQSIZE
-                        end_y = row * SQSIZE + SQSIZE // 2
-                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
-                    if 'D0' in line:
-                         start_x = col * SQSIZE
-                         start_y = row * SQSIZE
-                         end_x = (col + ROWS) * SQSIZE
-                         end_y = (row + ROWS) * SQSIZE
-                         pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
-                    if 'D1' in line:
-                        start_x = col * SQSIZE
-                        start_y = (row + 1) * SQSIZE
-                        end_x = (col + ROWS) * SQSIZE
-                        end_y = (row - ROWS + 1) * SQSIZE
-                        pygame.draw.line(screen, RED, (start_x, start_y), (end_x, end_y), WIN_LINE_WIDTH)
-
+                    
+                    if 'C' in line: #vertical wins                        
+                        iPos = (col * SQSIZE + SQSIZE // 2, 20)
+                        fPos = (col * SQSIZE + SQSIZE // 2, HEIGHT - 20)                        
+                    if 'R' in line: #horizontal wins
+                        iPos = (20, row * SQSIZE + SQSIZE // 2)
+                        fPos = (WIDTH - 20, row * SQSIZE + SQSIZE // 2)
+                    if line == 'D0': #desc diagonal wins
+                        iPos = (20, 20)
+                        fPos = (WIDTH - 20, HEIGHT - 20)
+                    if line == 'D1': #asc diagonal wins
+                        iPos = (20, HEIGHT - 20)
+                        fPos = (WIDTH - 20, 20) 
                     break
-        if win == False:
-            return 0
-            #if win: break    
 
+            if win: break
+        if win:    
+            if show:        
+                pygame.draw.line(screen, RED, iPos, fPos, LINE_WIDTH) 
+            return  token  
+        else:
+            return 0    
+        
     
     #--Generate dict of winning lines for board
     def set_lines_dict(self):
@@ -336,7 +310,15 @@ class Game:
             y = row * SQSIZE
             pygame.draw.line(screen, LINE_COLOR, (0, y), (WIDTH, y), LINE_WIDTH)
 
+        # # vertical
+        # pygame.draw.line(screen, LINE_COLOR, (SQSIZE, 0), (SQSIZE, HEIGHT), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (SQSIZE * 2, 0), (SQSIZE * 2, HEIGHT), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (WIDTH - SQSIZE, 0), (WIDTH - SQSIZE, HEIGHT), LINE_WIDTH)
 
+        # # horizontal
+        # pygame.draw.line(screen, LINE_COLOR, (0, SQSIZE), (WIDTH, SQSIZE), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (0, SQSIZE * 2), (WIDTH, SQSIZE * 2), LINE_WIDTH)
+        # pygame.draw.line(screen, LINE_COLOR, (0, HEIGHT - SQSIZE), (WIDTH, HEIGHT - SQSIZE), LINE_WIDTH)
 
     def draw_fig(self, row, col):
         if self.player == 1:
