@@ -17,8 +17,8 @@ INF = 1
 WIDTH = 600
 HEIGHT = 600
 
-ROWS = 3
-COLS = 3
+ROWS = 5
+COLS = 5
 SQSIZE = WIDTH // COLS
 
 LINE_WIDTH = 15
@@ -205,12 +205,10 @@ class AI:
 
         return empty_sqrs[idx] # (row, col)
 
-    # --- MINIMAX ---
+ # --- MINIMAX ---
 
-    def minimax(self, depth, board, alpha, beta, maximizing):
+    def minimax(self, board, maximizing):
         
-        #print (board.squares, "\n at ", depth)
-
         # terminal case
         case = board.final_state()
 
@@ -227,14 +225,66 @@ class AI:
             return 0, None
 
         if maximizing:
-            max_eval = -2
+            max_eval = -100
             best_move = None
             empty_sqrs = board.get_empty_sqrs()
 
             for (row, col) in empty_sqrs:
                 temp_board = copy.deepcopy(board)
                 temp_board.mark_sqr(row, col, 1)
-                eval = self.minimax(depth+1, temp_board, alpha, beta, False)[0]
+                eval = self.minimax(temp_board, False)[0]
+                if eval > max_eval:
+                    max_eval = eval
+                    best_move = (row, col)
+
+            return max_eval, best_move
+
+        elif not maximizing:
+            min_eval = 100
+            best_move = None
+            empty_sqrs = board.get_empty_sqrs()
+
+            for (row, col) in empty_sqrs:
+                temp_board = copy.deepcopy(board)
+                temp_board.mark_sqr(row, col, self.player)
+                eval = self.minimax(temp_board, True)[0]
+                if eval < min_eval:
+                    min_eval = eval
+                    best_move = (row, col)
+
+            return min_eval, best_move
+
+    # --- MINIMAX Alpha Beta Pruning ---
+
+    def minimax_alpha_beta(self, depth, board, alpha, beta, maximizing):
+        
+        #print (board.squares, "\n at ", depth)
+
+        potential_eval = (ROWS*COLS-depth)
+        # terminal case
+        case = board.final_state()
+
+        # player 1 wins
+        if case == 1:
+            return 1 * potential_eval, None # eval, move
+
+        # player 2 wins
+        if case == 2:
+            return -1 * potential_eval, None
+
+        # draw
+        elif board.isfull():
+            return 0, None
+
+        if maximizing:
+            max_eval = -1 * potential_eval
+            best_move = None
+            empty_sqrs = board.get_empty_sqrs()
+
+            for (row, col) in empty_sqrs:
+                temp_board = copy.deepcopy(board)
+                temp_board.mark_sqr(row, col, 1)
+                eval = self.minimax_alpha_beta(depth+1, temp_board, alpha, beta, False)[0]
                 if eval > max_eval:
                     max_eval = eval
                     best_move = (row, col)
@@ -244,14 +294,16 @@ class AI:
             return max_eval, best_move
 
         elif not maximizing:
-            min_eval = 2
+            min_eval = 1 * potential_eval
             best_move = None
+            
             empty_sqrs = board.get_empty_sqrs()
-
+            
             for (row, col) in empty_sqrs:
                 temp_board = copy.deepcopy(board)
                 temp_board.mark_sqr(row, col, self.player)
-                eval = self.minimax(depth+1, temp_board, alpha, beta,True)[0]
+                eval = self.minimax_alpha_beta(depth+1, temp_board, alpha, beta,True)[0]
+                
                 if eval < min_eval:
                     min_eval = eval
                     best_move = (row, col)
@@ -277,12 +329,16 @@ class AI:
                     move = self.rnd(main_board)
         else:
             # minimax algo choice
-            eval, move = self.minimax(0, main_board, -2, 2, False)
+            #eval, move = self.minimax(main_board, False)
 
+            #minimax with alpha-beta pruning
+            alpha = ROWS*COLS*-1
+            beta = ROWS*COLS
+            eval, move = self.minimax_alpha_beta(0, main_board, alpha, beta, False)
+            
         print(f'AI has chosen to mark the square in pos {move} with an eval of: {eval}')
 
         return move # row, col
-
 class Game:
 
     def __init__(self):
@@ -408,3 +464,6 @@ def main():
         pygame.display.update()
 
 main()
+   
+   
+   
